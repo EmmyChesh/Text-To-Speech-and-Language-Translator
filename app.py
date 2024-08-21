@@ -148,3 +148,7 @@ def remove_files(n):
                 print("Deleted ", f)
 
 remove_files(7)
+
+# Footer
+st.markdown("---")
+st.write("© 2024 EmmyChesh. All rights reserved.")
