@@ -8,17 +8,38 @@ from googletrans import Translator
 # Ensure the temporary directory exists
 os.makedirs("temp", exist_ok=True)
 
-# App title and description
-st.title("Text-to-Speech Converter by EmmyChesh")
-st.write("""
-    Welcome to the Text-to-Speech Converter! This app allows you to convert text into speech in various languages with different accents. 
-    Just input the text, select the languages, and hit "Convert" to get your audio file.
-""")
+# App title and description with custom styling
+st.markdown(
+    """
+    <style>
+    .title {
+        font-size: 36px;
+        font-weight: bold;
+        color: #2C3E50;
+    }
+    .description {
+        font-size: 18px;
+        color: #34495E;
+    }
+    .section-header {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1ABC9C;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-# Language options
+st.markdown('<p class="title">Text-to-Speech Converter by EmmyChesh</p>', unsafe_allow_html=True)
+st.markdown('<p class="description">Welcome to the Text-to-Speech Converter! This app allows you to convert text into speech in various languages with different accents. Input the text, select the languages, and hit "Convert" to get your audio file.</p>', unsafe_allow_html=True)
+
+# Language selection section with styling
+st.markdown('<p class="section-header">Language Options</p>', unsafe_allow_html=True)
+
 translator = Translator()
 
-text = st.text_area("Enter text", placeholder="Type your text here...")
+text = st.text_area("Enter text", placeholder="Type your text here...", height=100)
 
 in_lang = st.selectbox(
     "Select your input language",
