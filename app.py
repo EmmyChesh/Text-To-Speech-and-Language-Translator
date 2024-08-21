@@ -22,7 +22,7 @@ st.markdown("""
         border-radius: 10px;
         border: 2px solid #4CAF50;
         font-size: 15px; /* Increase font size */
-        height: 150px; /* Increase height */
+        height: 50px; /* Increase height */
     }
     .stTextInput>label {
         font-size: 15px; /* Increase label font size */
