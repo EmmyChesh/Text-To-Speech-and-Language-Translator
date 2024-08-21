@@ -21,18 +21,18 @@ st.markdown("""
     .stTextInput>div>input {
         border-radius: 10px;
         border: 2px solid #4CAF50;
-        font-size: 20px; /* Increase font size */
+        font-size: 15px; /* Increase font size */
         height: 80px; /* Increase height */
     }
     .stTextInput>label {
-        font-size: 20px; /* Increase label font size */
+        font-size: 15px; /* Increase label font size */
     }
     .stSelectbox>div>div>div {
         border-radius: 10px;
         border: 2px solid #4CAF50;
     }
     .stSelectbox>label {
-        font-size: 20px; /* Increase label font size */
+        font-size: 15px; /* Increase label font size */
     }
     .stButton>button {
         background-color: #4CAF50;
@@ -59,7 +59,7 @@ st.title("Text to Speech by EmmyChesh")
 translator = Translator()
 
 # Input Text
-text = st.text_area("Enter text", height=150)
+text = st.text_area("Enter text", height=120)
 
 # Input Language Selection
 in_lang = st.selectbox(
