@@ -21,18 +21,18 @@ st.markdown("""
     .stTextInput>div>input {
         border-radius: 10px;
         border: 2px solid #4CAF50;
-        font-size: 15px; /* Increase font size */
+        font-size: 20px; /* Increase font size */
         height: 80px; /* Increase height */
     }
     .stTextInput>label {
-        font-size: 15px; /* Increase label font size */
+        font-size: 20px; /* Increase label font size */
     }
     .stSelectbox>div>div>div {
         border-radius: 10px;
         border: 2px solid #4CAF50;
     }
     .stSelectbox>label {
-        font-size: 15px; /* Increase label font size */
+        font-size: 20px; /* Increase label font size */
     }
     .stButton>button {
         background-color: #4CAF50;
@@ -51,57 +51,40 @@ st.markdown("""
     .stMarkdown {
         font-family: Arial, sans-serif;
     }
+    /* Custom styles for spacing */
+    .custom-title {
+        margin-bottom: 30px; /* Space between title and input box */
+    }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("Text to Speech by EmmyChesh")
 
+# Add a custom markdown block to create space
+st.markdown('<div class="custom-title"></div>', unsafe_allow_html=True)
+
 translator = Translator()
 
 # Input Text
-text = st.text_area("Enter text", height=120)
+text = st.text_area("Enter text", height=150)
 
 # Input Language Selection
-in_lang = st.selectbox(
-    "Select your input language",
-    ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
-)
-
-language_dict = {
-    "English": "en",
-    "Hindi": "hi",
-    "Bengali": "bn",
-    "Korean": "ko",
-    "Chinese": "zh-cn",
-    "Japanese": "ja"
-}
-
-input_language = language_dict.get(in_lang, "en")
-
-# Output Language Selection
-out_lang = st.selectbox(
-    "Select your output language",
-    ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
-)
-
-output_language = language_dict.get(out_lang, "en")
+col1, col2 = st.columns(2)
+with col1:
+    in_lang = st.selectbox(
+        "Select your input language",
+        ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
+        index=0
+    )
+with col2:
+    out_lang = st.selectbox(
+        "Select your output language",
+        ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
+        index=0
+    )
 
 # English Accent Selection
-english_accent = st.selectbox(
-    "Select your English accent",
-    (
-        "Default",
-        "India",
-        "United Kingdom",
-        "United States",
-        "Canada",
-        "Australia",
-        "Ireland",
-        "South Africa",
-    ),
-)
-
-accent_dict = {
+accent_options = {
     "Default": "com",
     "India": "co.in",
     "United Kingdom": "co.uk",
@@ -111,9 +94,26 @@ accent_dict = {
     "Ireland": "ie",
     "South Africa": "co.za"
 }
+english_accent = st.selectbox(
+    "Select your English accent",
+    list(accent_options.keys())
+)
+tld = accent_options[english_accent]
 
-tld = accent_dict.get(english_accent, "com")
+# Language code mapping
+language_codes = {
+    "English": "en",
+    "Hindi": "hi",
+    "Bengali": "bn",
+    "Korean": "ko",
+    "Chinese": "zh-cn",
+    "Japanese": "ja"
+}
 
+input_language = language_codes[in_lang]
+output_language = language_codes[out_lang]
+
+# Function to convert text to speech
 def text_to_speech(input_language, output_language, text, tld):
     translation = translator.translate(text, src=input_language, dest=output_language)
     trans_text = translation.text
