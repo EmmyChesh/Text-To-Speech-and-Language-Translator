@@ -62,6 +62,17 @@ st.markdown("""
         -webkit-text-fill-color: transparent;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     }
+    @media (max-width: 600px) {
+        .custom-title {
+            font-size: 1.5rem; /* Adjust font size for smaller screens */
+            margin-bottom: 30px; /* Adjust margin for smaller screens */
+        }
+        .stTextInput>div>textarea,
+        .stSelectbox>div>div>div,
+        .stButton>button {
+            width: 100%; /* Ensure inputs and buttons fit the screen width */
+        }
+    }
     </style>
 """, unsafe_allow_html=True)
 
