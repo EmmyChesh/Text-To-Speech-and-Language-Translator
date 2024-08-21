@@ -4,104 +4,35 @@ import time
 import glob
 from gtts import gTTS
 from googletrans import Translator
+import tempfile
 
-# Directory setup
-if not os.path.exists("temp"):
-    os.mkdir("temp")
+# Create a temporary directory for audio files
+temp_dir = tempfile.mkdtemp()
 
-# Set up Streamlit page configuration
-st.set_page_config(page_title="Text to Speech By EmmyChesh", page_icon="🔊")
+# App title and description
+st.title("Text to Speech Converter by EmmyChesh")
+st.write("Convert text into speech in multiple languages with customizable accents.")
 
-# Add custom CSS styling
-st.markdown("""
-    <style>
-    .main {
-        padding: 2rem;
-    }
-    .stTextInput>div>input {
-        border-radius: 10px;
-        border: 2px solid #4CAF50;
-        font-size: 20px; /* Increase font size */
-        height: 60px; /* Increase height */
-    }
-    .stTextInput>label {
-        font-size: 22px; /* Increase label font size */
-    }
-    .stSelectbox>div>div>div {
-        border-radius: 10px;
-        border: 2px solid #4CAF50;
-    }
-    .stSelectbox>label {
-        font-size: 22px; /* Increase label font size */
-    }
-    .stButton>button {
-        background-color: #4CAF50;
-        color: white;
-        border-radius: 10px;
-        border: none;
-        padding: 0.5rem 2rem;
-        font-size: 16px;
-    }
-    .stButton>button:hover {
-        background-color: #45a049;
-    }
-    .stCheckbox>div>label {
-        color: #4CAF50;
-    }
-    .stMarkdown {
-        font-family: Arial, sans-serif;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Input text box
+text = st.text_area("Enter the text you want to convert to speech", height=150)
 
-st.title("Text to Speech by EmmyChesh")
+# Language selection for input and output in columns
+col1, col2 = st.columns(2)
+with col1:
+    in_lang = st.selectbox(
+        "Select your input language",
+        ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
+        index=0
+    )
+with col2:
+    out_lang = st.selectbox(
+        "Select your output language",
+        ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
+        index=0
+    )
 
-translator = Translator()
-
-# Input Text
-text = st.text_input("Enter text")
-
-# Input Language Selection
-in_lang = st.selectbox(
-    "Select your input language",
-    ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
-)
-
-language_dict = {
-    "English": "en",
-    "Hindi": "hi",
-    "Bengali": "bn",
-    "Korean": "ko",
-    "Chinese": "zh-cn",
-    "Japanese": "ja"
-}
-
-input_language = language_dict.get(in_lang, "en")
-
-# Output Language Selection
-out_lang = st.selectbox(
-    "Select your output language",
-    ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
-)
-
-output_language = language_dict.get(out_lang, "en")
-
-# English Accent Selection
-english_accent = st.selectbox(
-    "Select your English accent",
-    (
-        "Default",
-        "India",
-        "United Kingdom",
-        "United States",
-        "Canada",
-        "Australia",
-        "Ireland",
-        "South Africa",
-    ),
-)
-
-accent_dict = {
+# English accent selection
+accent_options = {
     "Default": "com",
     "India": "co.in",
     "United Kingdom": "co.uk",
@@ -111,43 +42,65 @@ accent_dict = {
     "Ireland": "ie",
     "South Africa": "co.za"
 }
+english_accent = st.selectbox(
+    "Select your English accent",
+    list(accent_options.keys())
+)
+tld = accent_options[english_accent]
 
-tld = accent_dict.get(english_accent, "com")
+# Language code mapping
+language_codes = {
+    "English": "en",
+    "Hindi": "hi",
+    "Bengali": "bn",
+    "Korean": "ko",
+    "Chinese": "zh-cn",
+    "Japanese": "ja"
+}
 
+input_language = language_codes[in_lang]
+output_language = language_codes[out_lang]
+
+# Function to convert text to speech
 def text_to_speech(input_language, output_language, text, tld):
+    translator = Translator()
     translation = translator.translate(text, src=input_language, dest=output_language)
     trans_text = translation.text
     tts = gTTS(trans_text, lang=output_language, tld=tld, slow=False)
-    my_file_name = text[:20] if text else "audio"
-    tts.save(f"temp/{my_file_name}.mp3")
-    return my_file_name, trans_text
+    my_file_name = text[:20].replace(" ", "_") or "audio"
+    file_path = os.path.join(temp_dir, f"{my_file_name}.mp3")
+    tts.save(file_path)
+    return file_path, trans_text
 
-# Convert Button
+# Display output text checkbox
+display_output_text = st.checkbox("Display output text")
+
+# Convert button
 if st.button("Convert"):
     if text:
-        result, output_text = text_to_speech(input_language, output_language, text, tld)
-        audio_file = open(f"temp/{result}.mp3", "rb")
-        audio_bytes = audio_file.read()
-        st.markdown("## Your audio:")
-        st.audio(audio_bytes, format="audio/mp3", start_time=0)
+        result_file_path, output_text = text_to_speech(input_language, output_language, text, tld)
+        with open(result_file_path, "rb") as audio_file:
+            audio_bytes = audio_file.read()
 
-        if st.checkbox("Display output text"):
-            st.markdown("## Output text:")
+        st.markdown("### Your audio:")
+        st.audio(audio_bytes, format="audio/mp3")
+
+        if display_output_text:
+            st.markdown("### Translated Text:")
             st.write(output_text)
     else:
-        st.error("Please enter text to convert.")
+        st.warning("Please enter some text to convert.")
 
-def remove_files(n):
-    mp3_files = glob.glob("temp/*mp3")
-    if mp3_files:
-        now = time.time()
-        n_days = n * 86400
-        for f in mp3_files:
-            if os.stat(f).st_mtime < now - n_days:
-                os.remove(f)
-                print("Deleted ", f)
+# Function to remove old files
+def remove_old_files(directory, days=7):
+    current_time = time.time()
+    for file_path in glob.glob(f"{directory}/*.mp3"):
+        file_modified_time = os.stat(file_path).st_mtime
+        if current_time - file_modified_time > days * 86400:
+            os.remove(file_path)
 
-remove_files(7)
+# Remove files older than 7 days
+remove_old_files(temp_dir)
 
 # Footer
 st.markdown("---")
