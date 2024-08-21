@@ -21,7 +21,7 @@ st.markdown("""
     .stTextInput>div>input {
         border-radius: 10px;
         border: 2px solid #4CAF50;
-        font-size: 18px; /* Increase font size */
+        font-size: 15px; /* Increase font size */
         height: 60px; /* Increase height */
     }
     .stTextInput>label {
