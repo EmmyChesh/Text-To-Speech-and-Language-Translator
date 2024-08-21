@@ -53,11 +53,19 @@ st.markdown("""
     }
     .custom-title {
         margin-bottom: 20px; /* Space between title and input box */
+        text-align: center;
+        color: #4CAF50;
+        font-size: 2.5rem;
+        font-weight: bold;
+        background: linear-gradient(45deg, #4CAF50, #8BC34A);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<h1 class="custom-title">Text to Speech by EmmyChesh</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="custom-title">🌟 Text to Speech by EmmyChesh 🌟</h1>', unsafe_allow_html=True)
 
 translator = Translator()
 
