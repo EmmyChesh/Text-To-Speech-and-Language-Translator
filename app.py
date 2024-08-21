@@ -65,26 +65,34 @@ input_language = language_codes[in_lang]
 output_language = language_codes[out_lang]
 
 def text_to_speech(input_language, output_language, text, tld):
-    translation = translator.translate(text, src=input_language, dest=output_language)
-    trans_text = translation.text
-    tts = gTTS(trans_text, lang=output_language, tld=tld, slow=False)
-    file_name = (text[:20] if text else "audio") + ".mp3"
-    tts.save(f"temp/{file_name}")
-    return file_name, trans_text
+    try:
+        translation = translator.translate(text, src=input_language, dest=output_language)
+        trans_text = translation.text
+        tts = gTTS(trans_text, lang=output_language, tld=tld, slow=False)
+        file_name = (text[:20] if text else "audio") + ".mp3"
+        tts.save(f"temp/{file_name}")
+        return file_name, trans_text
+    except Exception as e:
+        st.error(f"An error occurred during text-to-speech conversion: {e}")
+        return None, None
 
 # Display output text option
 display_output_text = st.checkbox("Display output text")
 
 if st.button("Convert"):
     result, output_text = text_to_speech(input_language, output_language, text, tld)
-    audio_file = open(f"temp/{result}", "rb")
-    audio_bytes = audio_file.read()
-    st.markdown("## Your audio:")
-    st.audio(audio_bytes, format="audio/mp3", start_time=0)
+    if result:
+        try:
+            audio_file = open(f"temp/{result}", "rb")
+            audio_bytes = audio_file.read()
+            st.markdown("## Your audio:")
+            st.audio(audio_bytes, format="audio/mp3", start_time=0)
 
-    if display_output_text:
-        st.markdown("## Output text:")
-        st.write(output_text)
+            if display_output_text:
+                st.markdown("## Output text:")
+                st.write(output_text)
+        except Exception as e:
+            st.error(f"An error occurred while processing the audio file: {e}")
 
 def remove_files(n):
     """Remove files older than `n` days from the temp directory."""
