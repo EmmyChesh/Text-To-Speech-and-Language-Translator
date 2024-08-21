@@ -63,13 +63,26 @@ output_language = language_codes[out_lang]
 
 # Function to convert text to speech
 def text_to_speech(input_language, output_language, text, tld):
-    translation = GoogleTranslator(source=input_language, target=output_language).translate(text)
+    st.write("Starting translation...")
+    try:
+        translation = GoogleTranslator(source=input_language, target=output_language).translate(text)
+        st.write("Translation complete.")
+    except Exception as e:
+        st.error(f"Error during translation: {e}")
+        return None, None
     
     # Replace invalid characters in the file name with an underscore
     my_file_name = re.sub(r'[\\/*?:"<>|\n\r]', "_", text[:20]) or "audio"
     
-    tts = gTTS(translation, lang=output_language, tld=tld, slow=False)
-    tts.save(f"temp/{my_file_name}.mp3")
+    st.write("Generating TTS...")
+    try:
+        tts = gTTS(translation, lang=output_language, tld=tld, slow=False)
+        tts.save(f"temp/{my_file_name}.mp3")
+        st.write("TTS file saved.")
+    except Exception as e:
+        st.error(f"Error during TTS generation: {e}")
+        return None, None
+    
     return my_file_name, translation
 
 # Display output text checkbox
@@ -79,15 +92,20 @@ display_output_text = st.checkbox("Display output text")
 if st.button("Convert"):
     if text:
         result, output_text = text_to_speech(input_language, output_language, text, tld)
-        audio_file = open(f"temp/{result}.mp3", "rb")
-        audio_bytes = audio_file.read()
+        if result:
+            try:
+                audio_file = open(f"temp/{result}.mp3", "rb")
+                audio_bytes = audio_file.read()
 
-        st.markdown("### Your audio:")
-        st.audio(audio_bytes, format="audio/mp3")
+                st.markdown("### Your audio:")
+                st.audio(audio_bytes, format="audio/mp3")
+                audio_file.close()
 
-        if display_output_text:
-            st.markdown("### Translated Text:")
-            st.write(output_text)
+                if display_output_text:
+                    st.markdown("### Translated Text:")
+                    st.write(output_text)
+            except Exception as e:
+                st.error(f"Error loading or playing audio: {e}")
     else:
         st.warning("Please enter some text to convert.")
 
