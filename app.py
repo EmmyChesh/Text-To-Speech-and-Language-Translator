@@ -18,11 +18,11 @@ st.markdown("""
     .main {
         padding: 2rem;
     }
-    .stTextInput>div>input {
+    .stTextInput>div>textarea {
         border-radius: 10px;
         border: 2px solid #4CAF50;
         font-size: 15px; /* Increase font size */
-        height: 80px; /* Increase height */
+        height: 120px; /* Increase height */
     }
     .stTextInput>label {
         font-size: 15px; /* Increase label font size */
@@ -51,10 +51,13 @@ st.markdown("""
     .stMarkdown {
         font-family: Arial, sans-serif;
     }
+    .custom-title {
+        margin-bottom: 20px; /* Space between title and input box */
+    }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("Text to Speech by EmmyChesh")
+st.markdown('<h1 class="custom-title">Text to Speech by EmmyChesh</h1>', unsafe_allow_html=True)
 
 translator = Translator()
 
