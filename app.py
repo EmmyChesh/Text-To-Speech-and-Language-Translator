@@ -65,7 +65,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<h1 class="custom-title">🌟 Text to Speech 🌟</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="custom-title">🌟Text 2 Speech By Chesh🌟</h1>', unsafe_allow_html=True)
 
 translator = Translator()
 
