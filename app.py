@@ -32,7 +32,7 @@ st.markdown("""
         border: 2px solid #4CAF50;
     }
     .stSelectbox>label {
-        font-size: 22px; /* Increase label font size */
+        font-size: 15px; /* Increase label font size */
     }
     .stButton>button {
         background-color: #4CAF50;
