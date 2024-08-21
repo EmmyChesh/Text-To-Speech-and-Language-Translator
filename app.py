@@ -2,57 +2,56 @@ import streamlit as st
 import os
 import time
 import glob
+import os
+
+
 from gtts import gTTS
 from googletrans import Translator
 
-# Ensure the temporary directory exists
-os.makedirs("temp", exist_ok=True)
-
-# App title and description with custom styling
-st.markdown(
-    """
-    <style>
-    .title {
-        font-size: 36px;
-        font-weight: bold;
-        color: #2C3E50;
-    }
-    .description {
-        font-size: 18px;
-        color: #34495E;
-    }
-    .section-header {
-        font-size: 24px;
-        font-weight: bold;
-        color: #1ABC9C;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-st.markdown('<p class="title">Text-to-Speech Converter by EmmyChesh</p>', unsafe_allow_html=True)
-st.markdown('<p class="description">Welcome to the Text-to-Speech Converter! This app allows you to convert text into speech in various languages with different accents. Input the text, select the languages, and hit "Convert" to get your audio file.</p>', unsafe_allow_html=True)
-
-# Language selection section with styling
-st.markdown('<p class="section-header">Language Options</p>', unsafe_allow_html=True)
-
+try:
+    os.mkdir("temp")
+except:
+    pass
+st.title("Text to Speech By EmmyChesh")
 translator = Translator()
 
-text = st.text_area("Enter text", placeholder="Type your text here...", height=100)
-
+text = st.text_input("Enter text")
 in_lang = st.selectbox(
     "Select your input language",
-    ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
+    ("English", "Hindi", "Bengali", "korean", "Chinese", "Japanese"),
 )
+if in_lang == "English":
+    input_language = "en"
+elif in_lang == "Hindi":
+    input_language = "hi"
+elif in_lang == "Bengali":
+    input_language = "bn"
+elif in_lang == "korean":
+    input_language = "ko"
+elif in_lang == "Chinese":
+    input_language = "zh-cn"
+elif in_lang == "Japanese":
+    input_language = "ja"
 
 out_lang = st.selectbox(
     "Select your output language",
-    ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
+    ("English", "Hindi", "Bengali", "korean", "Chinese", "Japanese"),
 )
+if out_lang == "English":
+    output_language = "en"
+elif out_lang == "Hindi":
+    output_language = "hi"
+elif out_lang == "Bengali":
+    output_language = "bn"
+elif out_lang == "korean":
+    output_language = "ko"
+elif out_lang == "Chinese":
+    output_language = "zh-cn"
+elif out_lang == "Japanese":
+    output_language = "ja"
 
 english_accent = st.selectbox(
-    "Select your English accent",
+    "Select your english accent",
     (
         "Default",
         "India",
@@ -65,74 +64,60 @@ english_accent = st.selectbox(
     ),
 )
 
-# Map user choices to language codes and TLDs
-language_map = {
-    "English": "en",
-    "Hindi": "hi",
-    "Bengali": "bn",
-    "Korean": "ko",
-    "Chinese": "zh-cn",
-    "Japanese": "ja"
-}
+if english_accent == "Default":
+    tld = "com"
+elif english_accent == "India":
+    tld = "co.in"
 
-accent_map = {
-    "Default": "com",
-    "India": "co.in",
-    "United Kingdom": "co.uk",
-    "United States": "com",
-    "Canada": "ca",
-    "Australia": "com.au",
-    "Ireland": "ie",
-    "South Africa": "co.za"
-}
+elif english_accent == "United Kingdom":
+    tld = "co.uk"
+elif english_accent == "United States":
+    tld = "com"
+elif english_accent == "Canada":
+    tld = "ca"
+elif english_accent == "Australia":
+    tld = "com.au"
+elif english_accent == "Ireland":
+    tld = "ie"
+elif english_accent == "South Africa":
+    tld = "co.za"
 
-input_language = language_map.get(in_lang, "en")
-output_language = language_map.get(out_lang, "en")
-tld = accent_map.get(english_accent, "com")
 
 def text_to_speech(input_language, output_language, text, tld):
-    if not text:
-        st.error("Please enter some text.")
-        return None, None
+    translation = translator.translate(text, src=input_language, dest=output_language)
+    trans_text = translation.text
+    tts = gTTS(trans_text, lang=output_language, tld=tld, slow=False)
     try:
-        translation = translator.translate(text, src=input_language, dest=output_language)
-        trans_text = translation.text
-        tts = gTTS(trans_text, lang=output_language, tld=tld, slow=False)
-        file_name = f"temp/{text[:20]}.mp3"
-        tts.save(file_name)
-        return file_name, trans_text
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        return None, None
+        my_file_name = text[0:20]
+    except:
+        my_file_name = "audio"
+    tts.save(f"temp/{my_file_name}.mp3")
+    return my_file_name, trans_text
+
 
 display_output_text = st.checkbox("Display output text")
 
-if st.button("Convert"):
-    result_file, output_text = text_to_speech(input_language, output_language, text, tld)
-    if result_file:
-        try:
-            with open(result_file, "rb") as audio_file:
-                audio_bytes = audio_file.read()
-                st.markdown("## Your Audio:")
-                st.audio(audio_bytes, format="audio/mp3", start_time=0)
-        except Exception as e:
-            st.error(f"An error occurred while loading the audio file: {e}")
+if st.button("convert"):
+    result, output_text = text_to_speech(input_language, output_language, text, tld)
+    audio_file = open(f"temp/{result}.mp3", "rb")
+    audio_bytes = audio_file.read()
+    st.markdown(f"## Your audio:")
+    st.audio(audio_bytes, format="audio/mp3", start_time=0)
 
-        if display_output_text:
-            st.markdown("## Output Text:")
-            st.write(output_text)
+    if display_output_text:
+        st.markdown(f"## Output text:")
+        st.write(f" {output_text}")
+
 
 def remove_files(n):
-    """Remove files older than n days."""
-    mp3_files = glob.glob("temp/*.mp3")
-    now = time.time()
-    n_days = n * 86400
-    for f in mp3_files:
-        if os.stat(f).st_mtime < now - n_days:
-            try:
+    mp3_files = glob.glob("temp/*mp3")
+    if len(mp3_files) != 0:
+        now = time.time()
+        n_days = n * 86400
+        for f in mp3_files:
+            if os.stat(f).st_mtime < now - n_days:
                 os.remove(f)
                 print("Deleted ", f)
-            except Exception as e:
-                print(f"Failed to delete {f}: {e}")
+
 
 remove_files(7)
