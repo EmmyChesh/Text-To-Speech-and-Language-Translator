@@ -21,18 +21,18 @@ st.markdown("""
     .stTextInput>div>input {
         border-radius: 10px;
         border: 2px solid #4CAF50;
-        font-size: 20px; /* Increase font size */
+        font-size: 15px; /* Increase font size */
         height: 60px; /* Increase height */
     }
     .stTextInput>label {
-        font-size: 22px; /* Increase label font size */
+        font-size: 15px; /* Increase label font size */
     }
     .stSelectbox>div>div>div {
         border-radius: 10px;
         border: 2px solid #4CAF50;
     }
     .stSelectbox>label {
-        font-size: 22px; /* Increase label font size */
+        font-size: 15px; /* Increase label font size */
     }
     .stButton>button {
         background-color: #4CAF50;
@@ -40,7 +40,7 @@ st.markdown("""
         border-radius: 10px;
         border: none;
         padding: 0.5rem 2rem;
-        font-size: 16px;
+        font-size: 15px;
     }
     .stButton>button:hover {
         background-color: #45a049;
