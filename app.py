@@ -110,10 +110,13 @@ display_output_text = st.checkbox("Display output text")
 if st.button("Convert"):
     result_file, output_text = text_to_speech(input_language, output_language, text, tld)
     if result_file:
-        with open(result_file, "rb") as audio_file:
-            audio_bytes = audio_file.read()
-            st.markdown("## Your Audio:")
-            st.audio(audio_bytes, format="audio/mp3", start_time=0)
+        try:
+            with open(result_file, "rb") as audio_file:
+                audio_bytes = audio_file.read()
+                st.markdown("## Your Audio:")
+                st.audio(audio_bytes, format="audio/mp3", start_time=0)
+        except Exception as e:
+            st.error(f"An error occurred while loading the audio file: {e}")
 
         if display_output_text:
             st.markdown("## Output Text:")
@@ -126,7 +129,10 @@ def remove_files(n):
     n_days = n * 86400
     for f in mp3_files:
         if os.stat(f).st_mtime < now - n_days:
-            os.remove(f)
-            print("Deleted ", f)
+            try:
+                os.remove(f)
+                print("Deleted ", f)
+            except Exception as e:
+                print(f"Failed to delete {f}: {e}")
 
 remove_files(7)
