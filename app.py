@@ -25,7 +25,7 @@ st.markdown("""
         height: 60px; /* Increase height */
     }
     .stTextInput>label {
-        font-size: 18px; /* Increase label font size */
+        font-size: 15px; /* Increase label font size */
     }
     .stSelectbox>div>div>div {
         border-radius: 10px;
@@ -40,7 +40,7 @@ st.markdown("""
         border-radius: 10px;
         border: none;
         padding: 0.5rem 2rem;
-        font-size: 16px;
+        font-size: 15px;
     }
     .stButton>button:hover {
         background-color: #45a049;
