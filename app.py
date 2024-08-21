@@ -51,6 +51,9 @@ st.markdown("""
     .stMarkdown {
         font-family: Arial, sans-serif;
     }
+    .stColumn {
+        padding: 0 1rem;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -59,60 +62,67 @@ st.title("Text to Speech by EmmyChesh")
 translator = Translator()
 
 # Input Text
-text = st.text_input("Enter text")
-
-# Input Language Selection
-in_lang = st.selectbox(
-    "Select your input language",
-    ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
+text = st.text_input(
+    "Enter the text you want to convert to speech:",
+    placeholder="Type your text here..."
 )
 
-language_dict = {
-    "English": "en",
-    "Hindi": "hi",
-    "Bengali": "bn",
-    "Korean": "ko",
-    "Chinese": "zh-cn",
-    "Japanese": "ja"
-}
+# Layout for Language and Accent Selection
+col1, col2 = st.columns([2, 1])
 
-input_language = language_dict.get(in_lang, "en")
+with col1:
+    st.subheader("Language Selection")
+    in_lang = st.selectbox(
+        "Select the language of the input text:",
+        ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese")
+    )
 
-# Output Language Selection
-out_lang = st.selectbox(
-    "Select your output language",
-    ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
-)
+    language_dict = {
+        "English": "en",
+        "Hindi": "hi",
+        "Bengali": "bn",
+        "Korean": "ko",
+        "Chinese": "zh-cn",
+        "Japanese": "ja"
+    }
 
-output_language = language_dict.get(out_lang, "en")
+    input_language = language_dict.get(in_lang, "en")
 
-# English Accent Selection
-english_accent = st.selectbox(
-    "Select your English accent",
-    (
-        "Default",
-        "India",
-        "United Kingdom",
-        "United States",
-        "Canada",
-        "Australia",
-        "Ireland",
-        "South Africa",
-    ),
-)
+    out_lang = st.selectbox(
+        "Select the language for the output speech:",
+        ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese")
+    )
 
-accent_dict = {
-    "Default": "com",
-    "India": "co.in",
-    "United Kingdom": "co.uk",
-    "United States": "com",
-    "Canada": "ca",
-    "Australia": "com.au",
-    "Ireland": "ie",
-    "South Africa": "co.za"
-}
+    output_language = language_dict.get(out_lang, "en")
 
-tld = accent_dict.get(english_accent, "com")
+with col2:
+    st.subheader("Accent Selection")
+    english_accent = st.selectbox(
+        "Select your English accent:",
+        (
+            "Default",
+            "India",
+            "United Kingdom",
+            "United States",
+            "Canada",
+            "Australia",
+            "Ireland",
+            "South Africa"
+        )
+    )
+
+    accent_dict = {
+        "Default": "com",
+        "India": "co.in",
+        "United Kingdom": "co.uk",
+        "United States": "com",
+        "Canada": "ca",
+        "Australia": "com.au",
+        "Ireland": "ie",
+        "South Africa": "co.za"
+    }
+
+    tld = accent_dict.get(english_accent, "com")
 
 def text_to_speech(input_language, output_language, text, tld):
     translation = translator.translate(text, src=input_language, dest=output_language)
