@@ -125,6 +125,9 @@ accent_dict = {
 
 tld = accent_dict.get(english_accent, "com")
 
+# Checkbox to display output text
+display_output_text = st.checkbox("Display output text")
+
 def text_to_speech(input_language, output_language, text, tld):
     translation = translator.translate(text, src=input_language, dest=output_language)
     trans_text = translation.text
@@ -142,7 +145,7 @@ if st.button("Convert"):
         st.markdown("## Your audio:")
         st.audio(audio_bytes, format="audio/mp3", start_time=0)
 
-        if st.checkbox("Display output text"):
+        if display_output_text:
             st.markdown("## Output text:")
             st.write(output_text)
     else:
