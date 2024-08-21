@@ -4,7 +4,7 @@ import time
 import glob
 import re
 from gtts import gTTS
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 
 # Create a temporary directory for audio files
 os.makedirs("temp", exist_ok=True)
@@ -63,16 +63,14 @@ output_language = language_codes[out_lang]
 
 # Function to convert text to speech
 def text_to_speech(input_language, output_language, text, tld):
-    translator = Translator()
-    translation = translator.translate(text, src=input_language, dest=output_language)
-    trans_text = translation.text
+    translation = GoogleTranslator(source=input_language, target=output_language).translate(text)
     
     # Replace invalid characters in the file name with an underscore
     my_file_name = re.sub(r'[\\/*?:"<>|\n\r]', "_", text[:20]) or "audio"
     
-    tts = gTTS(trans_text, lang=output_language, tld=tld, slow=False)
+    tts = gTTS(translation, lang=output_language, tld=tld, slow=False)
     tts.save(f"temp/{my_file_name}.mp3")
-    return my_file_name, trans_text
+    return my_file_name, translation
 
 # Display output text checkbox
 display_output_text = st.checkbox("Display output text")
