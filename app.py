@@ -52,10 +52,10 @@ st.markdown("""
         font-family: Arial, sans-serif;
     }
     .custom-title {
-        margin-bottom: 20px; /* Space between title and input box */
+        margin-bottom: 40px; /* Space between title and input box */
         text-align: center;
         color: #4CAF50;
-        font-size: 2.5rem;
+        font-size: 2rem; /* Reduced font size */
         font-weight: bold;
         background: linear-gradient(45deg, #4CAF50, #8BC34A);
         -webkit-background-clip: text;
