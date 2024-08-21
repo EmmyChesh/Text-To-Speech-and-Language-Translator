@@ -10,7 +10,7 @@ if not os.path.exists("temp"):
     os.mkdir("temp")
 
 # Set up Streamlit page configuration
-st.set_page_config(page_title="Text to Speech By EmmyChesh", page_icon="🔊")
+st.set_page_config(page_title="Text to Speech by EmmyChesh", page_icon="🔊")
 
 # Add custom CSS styling
 st.markdown("""
@@ -41,6 +41,7 @@ st.markdown("""
         border: none;
         padding: 0.5rem 2rem;
         font-size: 16px;
+        transition: background-color 0.3s ease;
     }
     .stButton>button:hover {
         background-color: #45a049;
@@ -51,6 +52,16 @@ st.markdown("""
     .stMarkdown {
         font-family: Arial, sans-serif;
     }
+    .stContainer {
+        padding: 1rem;
+    }
+    .stSubtitle {
+        font-size: 24px;
+        margin-bottom: 1rem;
+    }
+    .stSection {
+        margin-bottom: 2rem;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -58,61 +69,69 @@ st.title("Text to Speech by EmmyChesh")
 
 translator = Translator()
 
-# Input Text
-text = st.text_input("Enter text")
+# Input Section
+with st.container():
+    st.markdown('<div class="stSubtitle">Input Text</div>', unsafe_allow_html=True)
+    text = st.text_input("Enter the text you want to convert to speech:", placeholder="Type your text here...")
 
-# Input Language Selection
-in_lang = st.selectbox(
-    "Select your input language",
-    ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
-)
+# Language and Accent Selection
+with st.container():
+    st.markdown('<div class="stSubtitle">Language and Accent Selection</div>', unsafe_allow_html=True)
+    col1, col2 = st.columns([2, 1])
 
-language_dict = {
-    "English": "en",
-    "Hindi": "hi",
-    "Bengali": "bn",
-    "Korean": "ko",
-    "Chinese": "zh-cn",
-    "Japanese": "ja"
-}
+    with col1:
+        st.subheader("Language Selection")
+        in_lang = st.selectbox(
+            "Select the language of the input text:",
+            ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese")
+        )
 
-input_language = language_dict.get(in_lang, "en")
+        language_dict = {
+            "English": "en",
+            "Hindi": "hi",
+            "Bengali": "bn",
+            "Korean": "ko",
+            "Chinese": "zh-cn",
+            "Japanese": "ja"
+        }
 
-# Output Language Selection
-out_lang = st.selectbox(
-    "Select your output language",
-    ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese"),
-)
+        input_language = language_dict.get(in_lang, "en")
 
-output_language = language_dict.get(out_lang, "en")
+        out_lang = st.selectbox(
+            "Select the language for the output speech:",
+            ("English", "Hindi", "Bengali", "Korean", "Chinese", "Japanese")
+        )
 
-# English Accent Selection
-english_accent = st.selectbox(
-    "Select your English accent",
-    (
-        "Default",
-        "India",
-        "United Kingdom",
-        "United States",
-        "Canada",
-        "Australia",
-        "Ireland",
-        "South Africa",
-    ),
-)
+        output_language = language_dict.get(out_lang, "en")
 
-accent_dict = {
-    "Default": "com",
-    "India": "co.in",
-    "United Kingdom": "co.uk",
-    "United States": "com",
-    "Canada": "ca",
-    "Australia": "com.au",
-    "Ireland": "ie",
-    "South Africa": "co.za"
-}
+    with col2:
+        st.subheader("Accent Selection")
+        english_accent = st.selectbox(
+            "Select your English accent:",
+            (
+                "Default",
+                "India",
+                "United Kingdom",
+                "United States",
+                "Canada",
+                "Australia",
+                "Ireland",
+                "South Africa"
+            )
+        )
 
-tld = accent_dict.get(english_accent, "com")
+        accent_dict = {
+            "Default": "com",
+            "India": "co.in",
+            "United Kingdom": "co.uk",
+            "United States": "com",
+            "Canada": "ca",
+            "Australia": "com.au",
+            "Ireland": "ie",
+            "South Africa": "co.za"
+        }
+
+        tld = accent_dict.get(english_accent, "com")
 
 def text_to_speech(input_language, output_language, text, tld):
     translation = translator.translate(text, src=input_language, dest=output_language)
@@ -123,19 +142,21 @@ def text_to_speech(input_language, output_language, text, tld):
     return my_file_name, trans_text
 
 # Convert Button
-if st.button("Convert"):
-    if text:
-        result, output_text = text_to_speech(input_language, output_language, text, tld)
-        audio_file = open(f"temp/{result}.mp3", "rb")
-        audio_bytes = audio_file.read()
-        st.markdown("## Your audio:")
-        st.audio(audio_bytes, format="audio/mp3", start_time=0)
+with st.container():
+    st.markdown('<div class="stSubtitle">Conversion</div>', unsafe_allow_html=True)
+    if st.button("Convert"):
+        if text:
+            result, output_text = text_to_speech(input_language, output_language, text, tld)
+            audio_file = open(f"temp/{result}.mp3", "rb")
+            audio_bytes = audio_file.read()
+            st.markdown("## Your audio:")
+            st.audio(audio_bytes, format="audio/mp3", start_time=0)
 
-        if st.checkbox("Display output text"):
-            st.markdown("## Output text:")
-            st.write(output_text)
-    else:
-        st.error("Please enter text to convert.")
+            if st.checkbox("Display output text"):
+                st.markdown("## Output text:")
+                st.write(output_text)
+        else:
+            st.error("Please enter text to convert.")
 
 def remove_files(n):
     mp3_files = glob.glob("temp/*mp3")
